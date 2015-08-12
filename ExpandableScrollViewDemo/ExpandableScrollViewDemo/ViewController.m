@@ -20,7 +20,6 @@
     aView = YES;
     moreView = NO;
     
-    // Do any additional setup after loading the view, typically from a nib.
     for (NSLayoutConstraint *c in self.aConstraints) {
         [constraint2originalValue setObject:[[NSNumber alloc] initWithFloat:c.constant] forKey:[[NSNumber alloc] initWithInt:c.hash]];
     }
@@ -45,7 +44,6 @@
     // we evaluate the button at the bottom :)
     UIButton *bottomButton = moreView ? self.bottomButton : self.expandButton;
     
-    NSLog(@"inc: %f, button: %f, content: %f", increasedSize, bottomButton.frame.origin.y, self.scrollView.contentSize.height);
     self.scrollView.contentSize = CGSizeMake(self.scrollView.contentSize.width, MAX(bottomButton.frame.origin.y + bottomButton.frame.size.height + increasedSize, self.scrollView.contentSize.height));
     
     [self.view layoutIfNeeded];
@@ -54,6 +52,7 @@
 -(IBAction)switchView:(UIButton *)sender {
     increasedSize = 0;
     aView = !aView;
+    
     increasedSize += [self updateConstraints:self.aConstraints andIncreaseView:!aView];
     increasedSize += [self updateConstraints:self.bConstraints andIncreaseView:aView];
     self.bButton.hidden = !aView;
@@ -72,12 +71,9 @@
     [self.expandButton setTitle:title forState:UIControlStateNormal];
     [self.expandButton setTitle:title forState:UIControlStateSelected];
         
-    if (moreView) { // when expanding the view scroll up until the more / less button is on top
-        [self.scrollView setContentOffset:
+    // make it so that the expand button is always visible
+    [self.scrollView setContentOffset:
             CGPointMake(0, self.expandButton.frame.origin.y - 50) animated:YES];
-    }
-        
-    
 }
 
 -(float) updateConstraints:(NSArray*) constraints andIncreaseView:(BOOL) isIncreased {
