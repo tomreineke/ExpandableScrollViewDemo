@@ -72,8 +72,10 @@
     [self.expandButton setTitle:title forState:UIControlStateSelected];
         
     // make it so that the expand button is always visible
-    [self.scrollView setContentOffset:
+    if (moreView) {
+        [self.scrollView setContentOffset:
             CGPointMake(0, self.expandButton.frame.origin.y - 50) animated:YES];
+    }
 }
 
 -(float) updateConstraints:(NSArray*) constraints andIncreaseView:(BOOL) isIncreased {
