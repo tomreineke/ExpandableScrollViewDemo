@@ -56,7 +56,6 @@
     increasedSize += [self updateConstraints:self.aConstraints andIncreaseView:!aView];
     increasedSize += [self updateConstraints:self.bConstraints andIncreaseView:aView];
     self.bButton.hidden = !aView;
-    
 }
 
 -(IBAction)expand:(UIButton *)sender {
@@ -64,14 +63,13 @@
     moreView = !moreView;
     
     increasedSize += [self updateConstraints:self.moreConstraints andIncreaseView:moreView];
-    
     self.bottomButton.hidden = !moreView;
     
     NSString *title = moreView ? @"Collapse" : @"Expand";
     [self.expandButton setTitle:title forState:UIControlStateNormal];
     [self.expandButton setTitle:title forState:UIControlStateSelected];
         
-    // make it so that the expand button is always visible
+    // scroll up to the expandButton when the view is expanded.
     if (moreView) {
         [self.scrollView setContentOffset:
             CGPointMake(0, self.expandButton.frame.origin.y - 50) animated:YES];
