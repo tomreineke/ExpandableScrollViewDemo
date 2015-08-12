@@ -30,28 +30,13 @@
         c.constant = 0.0f; // hide elements of "b" view first as we want to show the "a" view.
     }
     
-    for (UIControl *c in self.bControls) {
-        c.hidden = YES; // UIControls from the "b" view need to be hidden this way, setting the constraint
-        // is not sufficient. However we still need the height constraint on such UIControls to calculate
-        // the height of the ScrollView correctly.
-    }
-    
-    for (UIControl *c in self.aControls) {
-        c.hidden = YES; // UIControls from the "a" view need to be hidden this way, setting the constraint
-        // is not sufficient. However we still need the height constraint on such UIControls to calculate
-        // the height of the ScrollView correctly.
-    }
-    
-    for (NSLayoutConstraint *c in self.aMoreConstraints) {
+    for (NSLayoutConstraint *c in self.moreConstraints) {
         [constraint2originalValue setObject:[[NSNumber alloc] initWithFloat:c.constant] forKey:[[NSNumber alloc] initWithInt:c.hash]];
         c.constant = 0.0f; // hide elements from the expanded view in the first place
     }
     
-    for (NSLayoutConstraint *c in self.bMoreConstraints) {
-        [constraint2originalValue setObject:[[NSNumber alloc] initWithFloat:c.constant] forKey:[[NSNumber alloc] initWithInt:c.hash]];
-        c.constant = 0.0f; // hide elements from the expanded view in the first place
-    }
- 
+    self.bButton.hidden = YES;
+    self.bottomButton.hidden = YES;
 }
 
 - (void)viewDidLayoutSubviews {
@@ -68,48 +53,31 @@
 
 -(IBAction)switchView:(UIButton *)sender {
     increasedSize = 0;
+    aView = !aView;
     increasedSize += [self updateConstraints:self.aConstraints andIncreaseView:!aView];
     increasedSize += [self updateConstraints:self.bConstraints andIncreaseView:aView];
-    if (moreView) {
-        increasedSize += [self updateConstraints:self.aMoreConstraints andIncreaseView:!aView];
-        increasedSize += [self updateConstraints:self.bMoreConstraints andIncreaseView:aView];
-    }
+    self.bButton.hidden = !aView;
     
-    for (UIControl *c in self.aControls) {
-        c.hidden = !moreView;
-    }
-    
-    for (UIControl *c in self.bControls) {
-        c.hidden = !moreView;
-    }
-    
-    aView = !aView;
 }
 
 -(IBAction)expand:(UIButton *)sender {
     increasedSize = 0;
-    if (aView) {
-        increasedSize += [self updateConstraints:self.aMoreConstraints andIncreaseView:!moreView];
-        for (UIControl *c in self.aControls) {
-            c.hidden = !moreView;
-        }
-    } else {
-        increasedSize += [self updateConstraints:self.bMoreConstraints andIncreaseView:!moreView];
-        for (UIControl *c in self.bControls) {
-            c.hidden = !moreView;
-        }
-    }
+    moreView = !moreView;
     
-    NSString *title = moreView ? @"Expand" : @"Collapse";
+    increasedSize += [self updateConstraints:self.moreConstraints andIncreaseView:moreView];
+    
+    self.bottomButton.hidden = !moreView;
+    
+    NSString *title = moreView ? @"Collapse" : @"Expand";
     [self.expandButton setTitle:title forState:UIControlStateNormal];
     [self.expandButton setTitle:title forState:UIControlStateSelected];
         
-    if (!moreView) { // when expanding the view scroll up until the more / less button is on top
+    if (moreView) { // when expanding the view scroll up until the more / less button is on top
         [self.scrollView setContentOffset:
-            CGPointMake(0, self.expandButton.frame.origin.y) animated:YES];
+            CGPointMake(0, self.expandButton.frame.origin.y - 50) animated:YES];
     }
         
-    moreView = !moreView;
+    
 }
 
 -(float) updateConstraints:(NSArray*) constraints andIncreaseView:(BOOL) isIncreased {
